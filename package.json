@@ -1,0 +1,23 @@
+{
+  "name": "screenshotr-extension",
+  "version": "0.1.0",
+  "description": "One-keystroke screenshot capture with automatic organization",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt --browser firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build --browser firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip --browser firefox",
+    "postinstall": "wxt prepare"
+  },
+  "devDependencies": {
+    "wxt": "^0.20.20",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "idb": "^8.0.3"
+  }
+}
