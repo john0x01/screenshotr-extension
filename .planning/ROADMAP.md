@@ -27,7 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A macOS-style shutter animation plays on the page without disrupting the page's own content or DOM
   3. The captured image is compressed to under 500 KB and stored locally (IndexedDB) with extracted metadata (title, domain, URL, path, timestamp)
   4. The extension loads in Chrome 112+ as a Manifest V3 extension with a service worker and minimum required permissions
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-01-PLAN.md -- Scaffold WXT project, configure manifest, implement capture pipeline (compression, storage, metadata, offscreen fallback, background handler)
+- [ ] 01-02-PLAN.md -- Implement macOS-style shutter animation content script with shadow DOM overlay, end-to-end verification
 
 ### Phase 2: Upload, Storage & API Contracts
 **Goal**: Captures flow from local storage to the backend API reliably, even across offline periods
@@ -56,10 +59,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Capture Pipeline | 0/? | Not started | - |
+| 1. Core Capture Pipeline | 0/2 | Planning complete | - |
 | 2. Upload, Storage & API Contracts | 0/? | Not started | - |
 | 3. Auth & Popup UI | 0/? | Not started | - |
