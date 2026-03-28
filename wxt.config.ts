@@ -1,6 +1,7 @@
 import { defineConfig } from 'wxt';
 
 export default defineConfig({
+  srcDir: '.',
   manifest: {
     name: 'ScreenshotR',
     description: 'One-keystroke screenshot capture with automatic organization',
