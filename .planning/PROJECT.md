@@ -1,3 +1,6 @@
+> **ARCHIVED:** Project planning has moved to the parent directory (`screenshotr/.planning/`).
+> This directory is preserved as a Phase 1 reference. Do not update these files.
+
 # ScreenshotR Extension
 
 ## What This Is
