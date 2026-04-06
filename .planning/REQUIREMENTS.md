@@ -9,14 +9,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Capture
 
-- [ ] **CAPT-01**: User can trigger a screenshot capture with a configurable global keyboard shortcut
-- [ ] **CAPT-02**: Extension captures the visible viewport using `chrome.tabs.captureVisibleTab()`
-- [ ] **CAPT-03**: Extension automatically extracts page title, domain, full URL, and path on capture
-- [ ] **CAPT-04**: Extension extracts timestamp at moment of capture
-- [ ] **CAPT-05**: Extension compresses captured image to under 500 KB without visible quality loss (Canvas API → WebP)
+- [x] **CAPT-01**: User can trigger a screenshot capture with a configurable global keyboard shortcut
+- [x] **CAPT-02**: Extension captures the visible viewport using `chrome.tabs.captureVisibleTab()`
+- [x] **CAPT-03**: Extension automatically extracts page title, domain, full URL, and path on capture
+- [x] **CAPT-04**: Extension extracts timestamp at moment of capture
+- [x] **CAPT-05**: Extension compresses captured image to under 500 KB without visible quality loss (Canvas API → WebP)
 - [ ] **CAPT-06**: Capture-to-upload cycle completes in under 3 seconds on standard broadband
-- [ ] **CAPT-07**: Extension displays macOS-style camera shutter animation (thumbnail preview sliding to corner) on capture
-- [ ] **CAPT-08**: Capture animation uses shadow DOM overlay and does not modify the host page's DOM
+- [x] **CAPT-07**: Extension displays macOS-style camera shutter animation (thumbnail preview sliding to corner) on capture
+- [x] **CAPT-08**: Capture animation uses shadow DOM overlay and does not modify the host page's DOM
 - [ ] **CAPT-09**: Extension auto-generates tags from URL path segments (e.g., `/checkout/confirm` → tags: "checkout", "confirm")
 
 ### Upload & Storage
@@ -43,9 +43,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Platform
 
-- [ ] **PLAT-01**: Extension works on Chrome 112+ using Manifest V3
-- [ ] **PLAT-02**: Extension uses MV3 service worker (not background page)
-- [ ] **PLAT-03**: Extension requests only minimum required permissions
+- [x] **PLAT-01**: Extension works on Chrome 112+ using Manifest V3
+- [x] **PLAT-02**: Extension uses MV3 service worker (not background page)
+- [x] **PLAT-03**: Extension requests only minimum required permissions
 
 ## v2 Requirements
 
@@ -89,14 +89,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAPT-01 | Phase 1 | Pending |
-| CAPT-02 | Phase 1 | Pending |
-| CAPT-03 | Phase 1 | Pending |
-| CAPT-04 | Phase 1 | Pending |
-| CAPT-05 | Phase 1 | Pending |
+| CAPT-01 | Phase 1 | Complete |
+| CAPT-02 | Phase 1 | Complete |
+| CAPT-03 | Phase 1 | Complete |
+| CAPT-04 | Phase 1 | Complete |
+| CAPT-05 | Phase 1 | Complete |
 | CAPT-06 | Phase 2 | Pending |
-| CAPT-07 | Phase 1 | Pending |
-| CAPT-08 | Phase 1 | Pending |
+| CAPT-07 | Phase 1 | Complete |
+| CAPT-08 | Phase 1 | Complete |
 | CAPT-09 | Phase 2 | Pending |
 | UPLD-01 | Phase 2 | Pending |
 | UPLD-02 | Phase 2 | Pending |
@@ -111,9 +111,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POPU-02 | Phase 3 | Pending |
 | POPU-03 | Phase 3 | Pending |
 | POPU-04 | Phase 3 | Pending |
-| PLAT-01 | Phase 1 | Pending |
-| PLAT-02 | Phase 1 | Pending |
-| PLAT-03 | Phase 1 | Pending |
+| PLAT-01 | Phase 1 | Complete |
+| PLAT-02 | Phase 1 | Complete |
+| PLAT-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 25 total

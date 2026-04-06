@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The extension loads in Chrome 112+ as a Manifest V3 extension with a service worker and minimum required permissions
 **Plans:** 2 plans
 Plans:
-- [ ] 01-01-PLAN.md -- Scaffold WXT project, configure manifest, implement capture pipeline (compression, storage, metadata, offscreen fallback, background handler)
+- [x] 01-01-PLAN.md -- Scaffold WXT project, configure manifest, implement capture pipeline (compression, storage, metadata, offscreen fallback, background handler)
 - [ ] 01-02-PLAN.md -- Implement macOS-style shutter animation content script with shadow DOM overlay, end-to-end verification
 
 ### Phase 2: Upload, Storage & API Contracts
