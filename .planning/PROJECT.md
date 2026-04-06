@@ -12,23 +12,22 @@ One-keystroke screenshot capture with zero manual organization — press the sho
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Register a configurable global keyboard shortcut to trigger capture — Phase 1
+- ✓ Capture visible viewport using `chrome.tabs.captureVisibleTab()` — Phase 1
+- ✓ Automatically extract page title, domain, full URL, and path on capture — Phase 1
+- ✓ Display a macOS-style camera shutter animation (thumbnail preview sliding to corner) on capture — Phase 1
+- ✓ Compress images to under 500 KB without visible quality loss — Phase 1
+- ✓ Extension must not modify the DOM of visited websites (content script for capture animation overlay only) — Phase 1
+- ✓ Chrome 112+ MV3 with service worker and minimum permissions — Phase 1
 
 ### Active
 
-- [ ] Register a configurable global keyboard shortcut to trigger capture
-- [ ] Capture visible viewport using `chrome.tabs.captureVisibleTab()`
-- [ ] Automatically extract page title, domain, full URL, and path on capture
 - [ ] Associate each capture with the user's currently selected project
-- [ ] Display a macOS-style camera shutter animation (thumbnail preview sliding to corner) on capture
 - [ ] Queue captures locally (IndexedDB) if offline and sync when reconnected (nice-to-have, include if straightforward)
 - [ ] OAuth authentication (Google/GitHub) via Supabase Auth
 - [ ] Popup UI for selecting active project, viewing recent captures, and settings
 - [ ] Define and implement API contracts for backend integration (capture upload, project list, auth)
-- [ ] Support Chrome 112+ and Firefox 115+
-- [ ] Compress images to under 500 KB without visible quality loss before upload
 - [ ] Complete capture-to-upload cycle in under 3 seconds on standard broadband
-- [ ] Extension must not modify the DOM of visited websites (content script for capture animation overlay only)
 
 ### Out of Scope
 
@@ -85,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-22 after initialization*
+*Last updated: 2026-04-06 after Phase 1 completion*
