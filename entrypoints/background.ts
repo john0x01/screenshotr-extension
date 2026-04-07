@@ -1,6 +1,7 @@
 import { compressImage } from '@/utils/compression';
-import { storeCapture } from '@/utils/storage';
+import { storeCapture, getCapture } from '@/utils/storage';
 import { extractMetadata } from '@/utils/metadata';
+import { uploadCapture, getAuthToken } from '@/utils/upload';
 import { COMPRESSION, ANIMATION } from '@/utils/constants';
 import type { BackgroundMessage, OffscreenMessage } from '@/utils/messages';
 
@@ -47,6 +48,23 @@ export default defineBackground({
         // Step 5: Store in IndexedDB
         const captureId = await storeCapture(compressed, metadata);
         console.log(`[screenshotr] Capture stored: ${captureId} (${(compressed.size / 1024).toFixed(1)}KB)`);
+
+        // Step 6: Upload to backend (if authenticated)
+        try {
+          const token = await getAuthToken();
+          if (token) {
+            const record = await getCapture(captureId);
+            if (record) {
+              await uploadCapture(record, token);
+              console.log(`[screenshotr] Capture uploaded: ${captureId}`);
+            }
+          } else {
+            console.log(`[screenshotr] Upload skipped: not authenticated (Phase 5 pending)`);
+          }
+        } catch (uploadErr) {
+          // Upload failure should NOT break the capture flow -- capture is safely in IndexedDB
+          console.warn('[screenshotr] Upload failed (will retry later):', uploadErr);
+        }
       } catch (err) {
         console.error('[screenshotr] Capture failed:', err);
       }
