@@ -64,3 +64,12 @@ export async function getRecentCaptures(limit: number = 10): Promise<CaptureReco
   const all = await db.getAllFromIndex('captures', 'by-capturedAt');
   return all.reverse().slice(0, limit);
 }
+
+export async function updateCaptureStatus(id: string, status: CaptureStatus): Promise<void> {
+  const db = await getDB();
+  const record = await db.get('captures', id);
+  if (record) {
+    record.status = status;
+    await db.put('captures', record);
+  }
+}
