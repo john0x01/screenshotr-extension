@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScreenshotR</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">ScreenshotR</h1>
+
+    <div id="loading-section" class="section">
+      <p class="status-text">Loading...</p>
+    </div>
+
+    <div id="auth-section" class="section" style="display:none">
+      <p class="status-text">Sign in to sync captures</p>
+      <button id="sign-in-google" class="btn btn-google">Sign in with Google</button>
+      <button id="sign-in-github" class="btn btn-github">Sign in with GitHub</button>
+    </div>
+
+    <div id="user-section" class="section" style="display:none">
+      <p class="status-text">Signed in as</p>
+      <p id="user-email" class="user-email"></p>
+      <button id="sign-out" class="btn btn-signout">Sign out</button>
+    </div>
+  </div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
