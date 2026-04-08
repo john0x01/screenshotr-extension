@@ -10,3 +10,7 @@ export type OffscreenMessage =
 
 export type OffscreenResponse =
   | { buffer: number[]; size: number };
+
+export type PopupMessage =
+  | { type: 'SIGN_IN'; provider: 'google' | 'github' }
+  | { type: 'SIGN_OUT' };

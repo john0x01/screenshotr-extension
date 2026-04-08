@@ -2,11 +2,35 @@ import { compressImage } from '@/utils/compression';
 import { storeCapture, getCapture } from '@/utils/storage';
 import { extractMetadata } from '@/utils/metadata';
 import { uploadCapture, getAuthToken } from '@/utils/upload';
-import { COMPRESSION, ANIMATION } from '@/utils/constants';
+import { hydrateStorageCache } from '@/utils/auth';
+import { syncPendingCaptures } from '@/utils/sync';
+import { COMPRESSION, ANIMATION, SYNC } from '@/utils/constants';
 import type { BackgroundMessage, OffscreenMessage } from '@/utils/messages';
 
 export default defineBackground({
-  main() {
+  async main() {
+    // Hydrate auth session from chrome.storage.local before any operations
+    await hydrateStorageCache();
+
+    // Register periodic sync alarm (survives service worker suspension)
+    chrome.alarms.create(SYNC.ALARM_NAME, { periodInMinutes: SYNC.ALARM_PERIOD_MINUTES });
+
+    chrome.alarms.onAlarm.addListener((alarm) => {
+      if (alarm.name === SYNC.ALARM_NAME && navigator.onLine) {
+        syncPendingCaptures();
+      }
+    });
+
+    // Immediate sync when connectivity returns
+    self.addEventListener('online', () => {
+      syncPendingCaptures();
+    });
+
+    // Sync on startup if online
+    if (navigator.onLine) {
+      syncPendingCaptures();
+    }
+
     chrome.commands.onCommand.addListener(async (command) => {
       if (command !== 'capture-screenshot') return;
 
