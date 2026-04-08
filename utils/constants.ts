@@ -20,3 +20,13 @@ export const DB = {
   VERSION: 1,
   CAPTURES_STORE: 'captures',
 } as const;
+
+export const SUPABASE = {
+  URL: import.meta.env.VITE_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+  ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ?? '',
+} as const;
+
+export const SYNC = {
+  ALARM_NAME: 'screenshotr-sync',
+  ALARM_PERIOD_MINUTES: 1,
+} as const;

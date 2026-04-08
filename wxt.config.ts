@@ -6,7 +6,7 @@ export default defineConfig({
     name: 'ScreenshotR',
     description: 'One-keystroke screenshot capture with automatic organization',
     version: '0.1.0',
-    permissions: ['activeTab', 'storage', 'offscreen'],
+    permissions: ['activeTab', 'storage', 'offscreen', 'identity', 'alarms'],
     commands: {
       'capture-screenshot': {
         suggested_key: {
