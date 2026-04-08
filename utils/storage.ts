@@ -65,6 +65,11 @@ export async function getRecentCaptures(limit: number = 10): Promise<CaptureReco
   return all.reverse().slice(0, limit);
 }
 
+export async function getPendingCaptures(): Promise<CaptureRecord[]> {
+  const db = await getDB();
+  return db.getAllFromIndex('captures', 'by-status', 'compressed');
+}
+
 export async function updateCaptureStatus(id: string, status: CaptureStatus): Promise<void> {
   const db = await getDB();
   const record = await db.get('captures', id);

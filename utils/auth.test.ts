@@ -52,9 +52,10 @@ describe('auth module', () => {
 
     it('is idempotent via ensureHydrated', async () => {
       storageData['key1'] = 'value1';
+      mockStorageLocal.get.mockClear();
 
       await auth.ensureHydrated();
-      await auth.ensureHydrated();
+      await auth.ensureHydrated(); // second call should be no-op
 
       expect(mockStorageLocal.get).toHaveBeenCalledTimes(1);
     });

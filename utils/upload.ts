@@ -1,5 +1,7 @@
 import type { CaptureRecord } from './storage';
 import { updateCaptureStatus } from './storage';
+import { getAuthToken } from './auth';
+export { getAuthToken };
 
 // TODO: Make configurable via extension settings (Phase 10)
 const API_BASE_URL = 'http://localhost:3000';
@@ -47,7 +49,4 @@ export async function uploadCapture(record: CaptureRecord, token: string): Promi
   await updateCaptureStatus(record.id, 'uploaded');
 }
 
-// TODO: Phase 5 implements chrome.identity.launchWebAuthFlow to get real Supabase token
-export async function getAuthToken(): Promise<string | null> {
-  return null;
-}
+// getAuthToken is now imported from ./auth and re-exported above
