@@ -1,94 +1,167 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mockStorageLocal, mockIdentity, storageData } from './__mocks__/chrome';
 
-// These imports will fail until Plan 05-01 creates auth.ts
-// import { signInWithProvider, signOut, getAuthToken, hydrateStorageCache, ensureHydrated, supabase } from './auth';
+// Mock @supabase/supabase-js
+const mockSignInWithOAuth = vi.fn();
+const mockExchangeCodeForSession = vi.fn();
+const mockGetSession = vi.fn();
+const mockSignOut = vi.fn();
 
-describe('chromeStorageAdapter (AUTH-06)', () => {
-  beforeEach(() => {
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn(() => ({
+    auth: {
+      signInWithOAuth: mockSignInWithOAuth,
+      exchangeCodeForSession: mockExchangeCodeForSession,
+      getSession: mockGetSession,
+      signOut: mockSignOut,
+    },
+  })),
+}));
+
+describe('auth module', () => {
+  let auth: typeof import('./auth');
+
+  beforeEach(async () => {
+    vi.resetModules();
+    (globalThis as any).chrome = {
+      storage: { local: mockStorageLocal },
+      identity: mockIdentity,
+      alarms: (globalThis as any).chrome?.alarms,
+    };
     mockStorageLocal._reset();
-    vi.clearAllMocks();
+    mockSignInWithOAuth.mockReset();
+    mockExchangeCodeForSession.mockReset();
+    mockGetSession.mockReset();
+    mockSignOut.mockReset();
+    mockIdentity.launchWebAuthFlow.mockReset();
+
+    auth = await import('./auth');
   });
 
-  it('hydrateStorageCache loads string values from chrome.storage.local', async () => {
-    // Setup: put session data in chrome.storage.local
-    // Call hydrateStorageCache()
-    // Expect cache to contain loaded values
-    expect(true).toBe(false); // RED placeholder
+  describe('hydrateStorageCache', () => {
+    it('loads string values from chrome.storage.local into cache', async () => {
+      storageData['sb-auth-token'] = '{"access_token":"test-token"}';
+      storageData['some-number'] = 42;
+
+      await auth.hydrateStorageCache();
+
+      const adapter = auth._getStorageAdapter();
+      expect(adapter.getItem('sb-auth-token')).toBe('{"access_token":"test-token"}');
+      expect(adapter.getItem('some-number')).toBeNull();
+    });
+
+    it('is idempotent via ensureHydrated', async () => {
+      storageData['key1'] = 'value1';
+
+      await auth.ensureHydrated();
+      await auth.ensureHydrated();
+
+      expect(mockStorageLocal.get).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it('getItem returns cached value after hydration', async () => {
-    // Setup: populate chrome.storage.local with a key-value pair
-    // Call hydrateStorageCache(), then chromeStorageAdapter.getItem(key)
-    // Expect returned value to match
-    expect(true).toBe(false);
+  describe('chromeStorageAdapter', () => {
+    it('setItem writes to both cache and chrome.storage.local', () => {
+      const adapter = auth._getStorageAdapter();
+      adapter.setItem('test-key', 'test-value');
+
+      expect(adapter.getItem('test-key')).toBe('test-value');
+      expect(mockStorageLocal.set).toHaveBeenCalledWith({ 'test-key': 'test-value' });
+    });
+
+    it('removeItem deletes from cache and chrome.storage.local', () => {
+      const adapter = auth._getStorageAdapter();
+      adapter.setItem('test-key', 'test-value');
+      adapter.removeItem('test-key');
+
+      expect(adapter.getItem('test-key')).toBeNull();
+      expect(mockStorageLocal.remove).toHaveBeenCalledWith('test-key');
+    });
   });
 
-  it('setItem writes to both cache and chrome.storage.local', async () => {
-    // Call chromeStorageAdapter.setItem(key, value)
-    // Expect chrome.storage.local.set to have been called
-    // Expect subsequent getItem to return the value
-    expect(true).toBe(false);
+  describe('signInWithProvider', () => {
+    it('calls supabase OAuth, launches web auth flow, exchanges code for session', async () => {
+      const oauthUrl = 'https://supabase.co/auth/v1/authorize?provider=google';
+      mockSignInWithOAuth.mockResolvedValue({
+        data: { url: oauthUrl, provider: 'google' },
+        error: null,
+      });
+      mockIdentity.launchWebAuthFlow.mockResolvedValue(
+        'https://test-extension-id.chromiumapp.org/oauth?code=test-auth-code',
+      );
+      mockExchangeCodeForSession.mockResolvedValue({
+        data: { session: { access_token: 'at', refresh_token: 'rt' } },
+        error: null,
+      });
+
+      await auth.signInWithProvider('google');
+
+      expect(mockSignInWithOAuth).toHaveBeenCalledWith(
+        expect.objectContaining({
+          provider: 'google',
+          options: expect.objectContaining({
+            skipBrowserRedirect: true,
+          }),
+        }),
+      );
+      expect(mockIdentity.launchWebAuthFlow).toHaveBeenCalledWith({
+        url: oauthUrl,
+        interactive: true,
+      });
+      expect(mockExchangeCodeForSession).toHaveBeenCalledWith('test-auth-code');
+    });
+
+    it('throws if auth flow is cancelled (no responseUrl)', async () => {
+      mockSignInWithOAuth.mockResolvedValue({
+        data: { url: 'https://supabase.co/auth', provider: 'google' },
+        error: null,
+      });
+      mockIdentity.launchWebAuthFlow.mockResolvedValue(undefined);
+
+      await expect(auth.signInWithProvider('google')).rejects.toThrow('Auth flow cancelled');
+    });
+
+    it('throws if no authorization code in redirect', async () => {
+      mockSignInWithOAuth.mockResolvedValue({
+        data: { url: 'https://supabase.co/auth', provider: 'google' },
+        error: null,
+      });
+      mockIdentity.launchWebAuthFlow.mockResolvedValue(
+        'https://test-extension-id.chromiumapp.org/oauth',
+      );
+
+      await expect(auth.signInWithProvider('google')).rejects.toThrow('No authorization code');
+    });
   });
 
-  it('ensureHydrated is idempotent (only hydrates once)', async () => {
-    // Call ensureHydrated() twice
-    // Expect chrome.storage.local.get to be called only once
-    expect(true).toBe(false);
-  });
-});
+  describe('getAuthToken', () => {
+    it('returns access_token from active session', async () => {
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: 'my-access-token' } },
+        error: null,
+      });
 
-describe('signInWithProvider (AUTH-04)', () => {
-  beforeEach(() => {
-    mockStorageLocal._reset();
-    vi.clearAllMocks();
-  });
+      const token = await auth.getAuthToken();
+      expect(token).toBe('my-access-token');
+    });
 
-  it('calls supabase.auth.signInWithOAuth with PKCE options', async () => {
-    // Mock supabase.auth.signInWithOAuth to return a URL
-    // Call signInWithProvider('google')
-    // Expect signInWithOAuth to have been called with flowType: 'pkce'
-    expect(true).toBe(false);
-  });
+    it('returns null when no session exists', async () => {
+      mockGetSession.mockResolvedValue({
+        data: { session: null },
+        error: null,
+      });
 
-  it('passes OAuth URL to chrome.identity.launchWebAuthFlow', async () => {
-    // Mock signInWithOAuth to return { data: { url: '...' } }
-    // Call signInWithProvider('google')
-    // Expect chrome.identity.launchWebAuthFlow to be called with the URL
-    expect(true).toBe(false);
+      const token = await auth.getAuthToken();
+      expect(token).toBeNull();
+    });
   });
 
-  it('extracts code from redirect URL and exchanges for session', async () => {
-    // Mock launchWebAuthFlow to return a redirect URL with ?code=abc
-    // Call signInWithProvider('google')
-    // Expect supabase.auth.exchangeCodeForSession to be called with 'abc'
-    expect(true).toBe(false);
-  });
+  describe('signOut', () => {
+    it('calls supabase.auth.signOut', async () => {
+      mockSignOut.mockResolvedValue({ error: null });
 
-  it('throws if auth flow cancelled (no responseUrl)', async () => {
-    // Mock launchWebAuthFlow to return undefined (user cancelled)
-    // Expect signInWithProvider('google') to throw
-    expect(true).toBe(false);
-  });
-});
-
-describe('getAuthToken (AUTH-06)', () => {
-  beforeEach(() => {
-    mockStorageLocal._reset();
-    vi.clearAllMocks();
-  });
-
-  it('returns access_token from active session', async () => {
-    // Mock supabase.auth.getSession to return a session with access_token
-    // Call getAuthToken()
-    // Expect the access_token to be returned
-    expect(true).toBe(false);
-  });
-
-  it('returns null when no session exists', async () => {
-    // Mock supabase.auth.getSession to return null session
-    // Call getAuthToken()
-    // Expect null
-    expect(true).toBe(false);
+      await auth.signOut();
+      expect(mockSignOut).toHaveBeenCalled();
+    });
   });
 });
